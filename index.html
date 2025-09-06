@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/src/Style/stPageFlip.css" />
   <style>
     :root{ --book-max-width: 1100px; }
-    html,body{ height:100%; }
-    body{ margin:0; background:#f6f7fb; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif; color:#222; }
-    .wrap{ min-height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
+    html,body{ height:100%; margin:0; }
+    body{ background:#f6f7fb; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif; color:#222; overflow:hidden; }
+    .wrap{ min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 0; }
     #book{ width:100%; max-width:var(--book-max-width); }
     .controls{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; }
     .btn{ appearance:none; border:none; border-radius:999px; padding:10px 14px; background:#111827; color:#fff; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.1); }
@@ -48,7 +48,6 @@
       startPage: 0
     });
 
-    // Daftar file gambar halaman
     const pages = [
       'pages/03 - Muslim itu Menyerah-01.png',
       'pages/03 - Muslim itu Menyerah-02.png',
