@@ -3,66 +3,35 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Flipbook eBook – Responsif</title>
+  <title>Flipbook eBook – 1 Page Fit</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/src/Style/stPageFlip.css" />
   <style>
-    :root{
-      --page-gap: 14px;
-      --max-book-w: 1800px;
-      --ui-pad: 10px;
-    }
-    html, body { height: 100dvh; margin: 0; }
-    body{
-      background:#f6f7fb;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif;
-      color:#222;
-    }
-    .wrap{ height:100dvh; display:flex; flex-direction:column; }
+    html,body{ height:100%; margin:0; background:#f6f7fb; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif; }
 
-    /* === UI floating, center top === */
+    .wrap{ min-height:100svh; display:flex; flex-direction:column; }
+
+    /* Tombol navigasi mengambang */
     .controls{
-      position: fixed;
-      top: var(--ui-pad);
-      left: 50%;
-      transform: translateX(-50%);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: rgba(255,255,255,.92);
-      backdrop-filter: blur(6px);
-      border: 1px solid #e8e9ef;
-      border-radius: 999px;
-      box-shadow: 0 8px 20px rgba(0,0,0,.08);
-      z-index: 50;
+      position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+      display:flex; align-items:center; gap:8px;
+      padding:6px 12px;
+      background:rgba(255,255,255,0.92);
+      border-radius:999px;
+      box-shadow:0 4px 14px rgba(0,0,0,.12);
+      z-index:10;
     }
-    .btn{ appearance:none; border:none; border-radius:999px; padding:10px 14px; background:#111827; color:#fff; cursor:pointer; }
+    .btn{
+      appearance:none; border:none; border-radius:999px; padding:8px 12px;
+      background:#111827; color:#fff; cursor:pointer;
+      box-shadow:0 2px 6px rgba(0,0,0,.08); font-size:14px;
+    }
     .btn.ghost{ background:#fff; color:#111; border:1px solid #e5e7eb; }
-    .btn.toggle{ background:#fff; color:#111; border:1px solid #e5e7eb; }
-    .btn.toggle.active{ background:#111827; color:#fff; }
     .meta{ font-size:13px; color:#555; margin:0 6px; }
 
-    /* Sembunyikan tombol toggle layout di layar kecil (kita kunci 1 page) */
-    @media (max-width: 959.98px){
-      .btn.toggle { display:none; }
-    }
+    .stage{ flex:1; display:flex; align-items:center; justify-content:center; overflow:hidden; min-height:100svh; }
+    #book{ width:100%; height:100%; max-width:1800px; min-width:280px; min-height:360px; }
 
-    .stage{
-      flex:1;
-      display:flex; align-items:center; justify-content:center;
-      padding: var(--page-gap);
-      min-height: 100dvh;       /* isi penuh viewport */
-      overflow:hidden;
-    }
-    #book{
-      width:100%; height:100%;
-      max-width: var(--max-book-w);
-      min-width: 280px; min-height: 360px;
-    }
-    .stf__wrapper{
-      filter: drop-shadow(0 10px 25px rgba(0,0,0,.08));
-      background:#fff; border-radius:8px;
-    }
+    .stf__wrapper{ filter: drop-shadow(0 10px 25px rgba(0,0,0,.08)); background:#fff; border-radius:8px; }
   </style>
 </head>
 <body>
@@ -73,124 +42,55 @@
       <span class="meta">Halaman <b id="cur">1</b>/<b id="tot">—</b></span>
       <button id="next"  class="btn"       title="Berikutnya">▶︎</button>
       <button id="last"  class="btn ghost" title="Halaman terakhir">⏭</button>
-      <span class="meta">•</span>
-      <!-- Toggle layout disembunyikan otomatis pada layar < 960px -->
-      <button id="layoutToggle" class="btn toggle" title="Ke 2 halaman (📖)">📖</button>
     </div>
 
-    <div class="stage">
-      <div id="book"></div>
-    </div>
+    <div class="stage"><div id="book"></div></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
   <script>
-    /* ===== Konstanta ===== */
-    const PAGE_W = 680, PAGE_H = 961;                 // rasio A4-ish
-    const RATIO_1 = PAGE_H / PAGE_W;                  // 1 page
-    const RATIO_2 = PAGE_H / (2 * PAGE_W);            // 2 pages side-by-side
-    const SAFE = 16;                                  // margin aman
-    const BREAKPOINT = 960;                           // < 960px paksa 1 page
+    const PAGE_W=680, PAGE_H=961;
+    const RATIO=PAGE_H/PAGE_W;
+    const SAFE_MARGIN=16;
 
-    /* ===== Inisialisasi Flip ===== */
-    const el = document.getElementById('book');
-    const flip = new St.PageFlip(el, {
-      width: PAGE_W, height: PAGE_H,
-      size: 'stretch', autoSize: true,
-      minWidth: 280, minHeight: 360,
-      maxWidth: 2000, maxHeight: 2800,
-      showCover: true, usePortrait: true,
-      mobileScrollSupport: true,
-      drawShadow: true, maxShadowOpacity: 0.2,
-      flippingTime: 600, startPage: 0
+    const flip=new St.PageFlip(document.getElementById('book'),{
+      width:PAGE_W,height:PAGE_H,size:'stretch',autoSize:true,
+      minWidth:280,minHeight:360,maxWidth:2000,maxHeight:2800,
+      showCover:true,usePortrait:true,mobileScrollSupport:true,
+      drawShadow:true,maxShadowOpacity:0.2,flippingTime:600,startPage:0
     });
 
-    /* ==== Pages ==== */
-    const pages = [
+    const pages=[
       'pages/03 - Muslim itu Menyerah-01.png','pages/03 - Muslim itu Menyerah-02.png','pages/03 - Muslim itu Menyerah-03.png','pages/03 - Muslim itu Menyerah-04.png','pages/03 - Muslim itu Menyerah-05.png','pages/03 - Muslim itu Menyerah-06.png','pages/03 - Muslim itu Menyerah-07.png','pages/03 - Muslim itu Menyerah-08.png','pages/03 - Muslim itu Menyerah-09.png','pages/03 - Muslim itu Menyerah-10.png','pages/03 - Muslim itu Menyerah-11.png','pages/03 - Muslim itu Menyerah-12.png','pages/03 - Muslim itu Menyerah-13.png','pages/03 - Muslim itu Menyerah-14.png','pages/03 - Muslim itu Menyerah-15.png','pages/03 - Muslim itu Menyerah-16.png','pages/03 - Muslim itu Menyerah-17.png','pages/03 - Muslim itu Menyerah-18.png','pages/03 - Muslim itu Menyerah-19.png','pages/03 - Muslim itu Menyerah-20.png','pages/03 - Muslim itu Menyerah-21.png','pages/03 - Muslim itu Menyerah-22.png','pages/03 - Muslim itu Menyerah-23.png','pages/03 - Muslim itu Menyerah-24.png','pages/03 - Muslim itu Menyerah-25.png','pages/03 - Muslim itu Menyerah-26.png'
     ];
     flip.loadFromImages(pages);
 
-    /* ==== Navigasi ==== */
-    const $cur = document.getElementById('cur');
-    const $tot = document.getElementById('tot');
-    flip.on('init', (e) => { $tot.textContent = flip.getPageCount(); $cur.textContent = (e.data.page + 1); layout(); });
-    flip.on('flip', (e) => { $cur.textContent = (e.data + 1); });
+    const $cur=document.getElementById('cur'),$tot=document.getElementById('tot');
+    flip.on('init',e=>{$tot.textContent=flip.getPageCount();$cur.textContent=(e.data.page+1);scheduleLayout();});
+    flip.on('flip',e=>{$cur.textContent=(e.data+1);});
 
-    document.getElementById('first').onclick = () => flip.flip(0);
-    document.getElementById('prev').onclick  = () => flip.flipPrev();
-    document.getElementById('next').onclick  = () => flip.flipNext();
-    document.getElementById('last').onclick  = () => flip.flip(flip.getPageCount()-1);
+    document.getElementById('first').onclick=()=>flip.flip(0);
+    document.getElementById('prev').onclick =()=>flip.flipPrev();
+    document.getElementById('next').onclick =()=>flip.flipNext();
+    document.getElementById('last').onclick =()=>flip.flip(flip.getPageCount()-1);
 
-    /* ==== Layout Mode ==== */
-    let layoutMode = 'single'; // 'single' | 'spread'
-    const layoutBtn = document.getElementById('layoutToggle');
-    layoutBtn.onclick = () => {
-      // hanya izinkan toggle jika layar >= BREAKPOINT
-      if (window.innerWidth < BREAKPOINT) return;
-      layoutMode = (layoutMode === 'single') ? 'spread' : 'single';
-      updateToggle();
-      layout();
-    };
-    function updateToggle(){
-      if (layoutMode === 'single'){
-        layoutBtn.textContent = '📖';
-        layoutBtn.title = 'Ke 2 halaman (📖)';
-        layoutBtn.classList.remove('active');
-      } else {
-        layoutBtn.textContent = '📄';
-        layoutBtn.title = 'Ke 1 halaman (📄)';
-        layoutBtn.classList.add('active');
-      }
+    function doLayout(){
+      const stageEl=document.querySelector('.stage');
+      const padX=parseFloat(getComputedStyle(stageEl).paddingLeft)+parseFloat(getComputedStyle(stageEl).paddingRight);
+      const usableW=Math.max(320,stageEl.clientWidth-padX)-SAFE_MARGIN;
+      const usableH=Math.max(320,window.innerHeight-80)-SAFE_MARGIN;
+      let targetW=Math.min(usableW,usableH/RATIO);
+      let targetH=targetW*RATIO;
+      const book=document.getElementById('book');
+      book.style.width=Math.max(280,Math.floor(targetW))+'px';
+      book.style.height=Math.max(360,Math.floor(targetH))+'px';
+      try{flip.update();}catch(e){}
     }
-
-    /* ==== Perhitungan ukuran aman (tanpa terpotong) ==== */
-    const stage = document.querySelector('.stage');
-    function layout(){
-      // Lock 1 page di layar sempit
-      if (window.innerWidth < BREAKPOINT) {
-        if (layoutMode !== 'single'){ layoutMode = 'single'; updateToggle(); }
-      }
-      const spread   = (layoutMode === 'spread');
-      const effRatio = spread ? RATIO_2 : RATIO_1;
-
-      // area yang bisa dipakai
-      const cs = getComputedStyle(stage);
-      const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-      const usableW = Math.max(320, stage.clientWidth - padX) - SAFE;
-      const usableH = Math.max(320, window.innerHeight) - SAFE;
-
-      // Fit to container
-      let targetW = Math.min(usableW, usableH / effRatio);
-      let targetH = targetW * effRatio;
-
-      const book = document.getElementById('book');
-      book.style.width  = Math.max(280, Math.floor(targetW)) + 'px';
-      book.style.height = Math.max(360, Math.floor(targetH)) + 'px';
-
-      try { flip.update(); } catch(e) {}
-    }
-
-    // re-layout saat environment berubah
-    ['load','resize','orientationchange','fullscreenchange','pageshow','visibilitychange']
-      .forEach(evt => window.addEventListener(evt, () => requestAnimationFrame(layout)));
-    new ResizeObserver(() => layout()).observe(stage);
-
-    // refresh saat DPI/zoom berubah
-    let lastDPR = window.devicePixelRatio;
-    setInterval(() => {
-      if (window.devicePixelRatio !== lastDPR) {
-        lastDPR = window.devicePixelRatio; layout();
-      }
-    }, 300);
-
-    // keyboard nav (desktop)
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft')  flip.flipPrev();
-      if (e.key === 'ArrowRight') flip.flipNext();
-      if (e.key === 'Home')       flip.flip(0);
-      if (e.key === 'End')        flip.flip(flip.getPageCount()-1);
-    });
+    let timer;
+    function scheduleLayout(){clearTimeout(timer);timer=setTimeout(doLayout,60);}
+    window.addEventListener('load',()=>setTimeout(scheduleLayout,60));
+    window.addEventListener('resize',scheduleLayout);
+    window.addEventListener('orientationchange',scheduleLayout);
   </script>
 </body>
 </html>
