@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flipbook eBook – Contoh</title>
+  <!-- StPageFlip styles (CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/src/Style/stPageFlip.css" />
+  <style>
+    :root{ --book-max-width: 1100px; }
+    html,body{ height:100%; }
+    body{ margin:0; background:#f6f7fb; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif; color:#222; }
+    .wrap{ min-height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
+    #book{ width:100%; max-width:var(--book-max-width); }
+    .controls{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; }
+    .btn{ appearance:none; border:none; border-radius:999px; padding:10px 14px; background:#111827; color:#fff; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.1); }
+    .btn:disabled{ opacity:.5; cursor:not-allowed; }
+    .meta{ font-size:12px; color:#666; }
+    .stf__wrapper{ filter: drop-shadow(0 10px 25px rgba(0,0,0,.08)); background:#fff; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="book"></div>
+    <div class="controls">
+      <button id="prev" class="btn">◀︎ Sebelumnya</button>
+      <button id="next" class="btn">Berikutnya ▶︎</button>
+      <span class="meta">Halaman <span id="cur">1</span> / <span id="tot">—</span></span>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+  <script>
+    const el = document.getElementById('book');
+    const flip = new St.PageFlip(el, {
+      width: 800,
+      height: 1131,
+      size: 'stretch',
+      minWidth: 315, minHeight: 420,
+      maxWidth: 1600, maxHeight: 2262,
+      autoSize: true,
+      showCover: true,
+      usePortrait: true,
+      mobileScrollSupport: true,
+      drawShadow: true,
+      maxShadowOpacity: 0.2,
+      flippingTime: 600,
+      startPage: 0
+    });
+
+    // Daftar file gambar halaman
+    const pages = [
+      'pages/03 - Muslim itu Menyerah-01.png',
+      'pages/03 - Muslim itu Menyerah-02.png',
+      'pages/03 - Muslim itu Menyerah-03.png',
+      'pages/03 - Muslim itu Menyerah-04.png',
+      'pages/03 - Muslim itu Menyerah-05.png',
+      'pages/03 - Muslim itu Menyerah-06.png',
+      'pages/03 - Muslim itu Menyerah-07.png',
+      'pages/03 - Muslim itu Menyerah-08.png',
+      'pages/03 - Muslim itu Menyerah-09.png',
+      'pages/03 - Muslim itu Menyerah-10.png',
+      'pages/03 - Muslim itu Menyerah-11.png',
+      'pages/03 - Muslim itu Menyerah-12.png',
+      'pages/03 - Muslim itu Menyerah-13.png',
+      'pages/03 - Muslim itu Menyerah-14.png',
+      'pages/03 - Muslim itu Menyerah-15.png',
+      'pages/03 - Muslim itu Menyerah-16.png',
+      'pages/03 - Muslim itu Menyerah-17.png',
+      'pages/03 - Muslim itu Menyerah-18.png',
+      'pages/03 - Muslim itu Menyerah-19.png',
+      'pages/03 - Muslim itu Menyerah-20.png',
+      'pages/03 - Muslim itu Menyerah-21.png',
+      'pages/03 - Muslim itu Menyerah-22.png',
+      'pages/03 - Muslim itu Menyerah-23.png',
+      'pages/03 - Muslim itu Menyerah-24.png',
+      'pages/03 - Muslim itu Menyerah-25.png',
+      'pages/03 - Muslim itu Menyerah-26.png'
+    ];
+
+    flip.loadFromImages(pages);
+
+    const $cur = document.getElementById('cur');
+    const $tot = document.getElementById('tot');
+
+    flip.on('init', (e) => {
+      $tot.textContent = flip.getPageCount();
+      $cur.textContent = (e.data.page + 1);
+    });
+
+    flip.on('flip', (e) => {
+      $cur.textContent = (e.data + 1);
+    });
+
+    document.getElementById('prev').addEventListener('click', () => flip.flipPrev());
+    document.getElementById('next').addEventListener('click', () => flip.flipNext());
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') flip.flipPrev();
+      if (e.key === 'ArrowRight') flip.flipNext();
+    });
+  </script>
+</body>
+</html>
