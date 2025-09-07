@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Flipbook eBook – 1 Page Fit</title>
+  <title>eBook</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/src/Style/stPageFlip.css" />
   <style>
     html,body{ height:100%; margin:0; background:#f6f7fb; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif; }
@@ -56,8 +56,9 @@
     const flip=new St.PageFlip(document.getElementById('book'),{
       width:PAGE_W,height:PAGE_H,size:'stretch',autoSize:true,
       minWidth:280,minHeight:360,maxWidth:2000,maxHeight:2800,
-      showCover:true,usePortrait:true,mobileScrollSupport:true,
-      drawShadow:true,maxShadowOpacity:0.2,flippingTime:600,startPage:0
+      showCover:true,usePortrait:true, // default mobile (akan diubah otomatis di bawah)
+      mobileScrollSupport:true,drawShadow:true,maxShadowOpacity:0.2,
+      flippingTime:600,startPage:0
     });
 
     const pages=[
@@ -74,6 +75,20 @@
     document.getElementById('next').onclick =()=>flip.flipNext();
     document.getElementById('last').onclick =()=>flip.flip(flip.getPageCount()-1);
 
+    // === Auto Layout: mobile 1 halaman, tablet/desktop 2 halaman ===
+    function updatePageMode() {
+      const width = window.innerWidth;
+      if (width < 768) {
+        // Mobile: 1 halaman (portrait)
+        flip.update({ usePortrait: true, showCover: true });
+      } else {
+        // Tablet & Desktop: 2 halaman (spread)
+        flip.update({ usePortrait: false, showCover: true });
+      }
+      // Pastikan ukuran kontainer disesuaikan setelah mode berubah
+      scheduleLayout();
+    }
+
     function doLayout(){
       const stageEl=document.querySelector('.stage');
       const padX=parseFloat(getComputedStyle(stageEl).paddingLeft)+parseFloat(getComputedStyle(stageEl).paddingRight);
@@ -88,9 +103,12 @@
     }
     let timer;
     function scheduleLayout(){clearTimeout(timer);timer=setTimeout(doLayout,60);}
-    window.addEventListener('load',()=>setTimeout(scheduleLayout,60));
-    window.addEventListener('resize',scheduleLayout);
-    window.addEventListener('orientationchange',scheduleLayout);
+
+    // Initial & responsive handlers
+    window.addEventListener('load', () => { updatePageMode(); setTimeout(scheduleLayout,60); });
+    window.addEventListener('resize', () => { updatePageMode(); });
+    window.addEventListener('orientationchange', () => { updatePageMode(); });
+
   </script>
 </body>
 </html>
